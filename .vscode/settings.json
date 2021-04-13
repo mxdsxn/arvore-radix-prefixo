@@ -1,5 +1,5 @@
 {
- "C_Cpp.errorSquiggles": "Enabled",
+ "C_Cpp.errorSquiggles": "Disabled",
  "files.associations": {
   "*.js": "javascriptreact",
   "*.ts": "typescript",
@@ -46,6 +46,7 @@
   "sstream": "cpp",
   "stdexcept": "cpp",
   "streambuf": "cpp",
-  "typeinfo": "cpp"
+  "typeinfo": "cpp",
+  "iostream": "cpp"
  }
 }
