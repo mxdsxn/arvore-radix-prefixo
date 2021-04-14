@@ -6,9 +6,9 @@ using namespace std;
 
 typedef struct NoPatricia
 {
-  string chavePrefixo = "";
+  string chavePrefixo;
   vector<NoPatricia *> filhos;
-  bool vazio = true;
+  bool vazio = false;
 } No;
 
 string getPrefixo(string string1, string string2)
@@ -27,77 +27,118 @@ string getPrefixo(string string1, string string2)
   return "";
 }
 
+void imprimirArvore(No *raiz, long int nivel = 0)
+{
+  if (raiz)
+  {
+    string espacador = "-";
+    for (int i = 0; i < nivel; i++)
+    {
+      espacador += espacador;
+    }
+    espacador += "|";
+
+    cout << espacador
+         << " chavePrefixo: "
+         << raiz->chavePrefixo
+         << " | vazio: "
+         << raiz->vazio
+         << " | total filhos: "
+         << raiz->filhos.size() << endl;
+
+    if (raiz->filhos.size() > 0)
+    {
+      for (int index = 0; index < raiz->filhos.size(); index++)
+      {
+        imprimirArvore(raiz->filhos[index], nivel + 1);
+      }
+    }
+  }
+}
+
 bool inserirFrase(No *raiz, string novaFrase)
 {
-
-  if (raiz->chavePrefixo == "" && raiz->vazio)
+  //inserindo na RAIZ, noh vazio
+  if (raiz->vazio)
   {
     raiz->chavePrefixo = novaFrase;
     raiz->vazio = false;
 
-    cout << "if";
-    // return true;
+    return true;
   }
   else
   {
-    cout << "else"
-         << raiz->chavePrefixo;
+    string prefixo = getPrefixo(raiz->chavePrefixo, novaFrase);
+    if (prefixo != "")
+    {
+      // se for inserido uma frase que seja igual ao noh atual, nao é inserido nada na arvore.
+      if (prefixo == raiz->chavePrefixo && prefixo == novaFrase)
+      {
+        return false;
+      }
+      else
+      {
+        string restoFrase = novaFrase.substr(prefixo.length(), novaFrase.length());
+        // removendo espaco vazio do inicio da palavra para nao considerar " " como prefixo
+        if (restoFrase[0] == ' ')
+        {
+          restoFrase = restoFrase.substr(1, restoFrase.length());
+        }
 
-    // return false;
-    // string prefixo = getPrefixo(raiz->chavePrefixo, novaFrase);
+        if (raiz->filhos.size() > 0)
+        {
+          // procura nos filhos do noh atual, se a nova frase pode ser neto do no atual
+          // caso seja, insere no filho responsavel e retorna
+          for (int i = 0; i < raiz->filhos.size(); i++)
+          {
+            if (getPrefixo(raiz->filhos[i]->chavePrefixo, restoFrase) != "")
+            {
+              cout << "filho escolhido: " << raiz->filhos[i]->chavePrefixo << endl;
+              cout << "restoFrase" << restoFrase << endl;
+              return inserirFrase(raiz->filhos[i], restoFrase);
+            }
+          }
+        }
+        // caso nao seja neto do noh atual, insere a nova frase como filho do noh atual
+        No *ponteiroNovoNo = (No *)malloc(sizeof(No));
 
-    // if (prefixo != "")
-    // {
-    //   // se for inserido uma frase que seja igual ao no atual, nao é inserido nada na arvore.
-    //   if (prefixo == raiz->chavePrefixo && prefixo == novaFrase)
-    //   {
-    //     return false;
-    //   }
-    //   else
-    //   {
-    //     string restoFrase = novaFrase.substr(prefixo.length() - 1, novaFrase.length());
+        ponteiroNovoNo->chavePrefixo = restoFrase;
+        raiz->filhos.push_back(ponteiroNovoNo);
+        return true;
+      }
+    }
+    else
+    {
+      No *novoNo = (No *)malloc(sizeof(No));
+      No *antigaRaiz = (No *)malloc(sizeof(No));
 
-    //     if (raiz->filhos.size() == 0)
-    //     {
-    //       No *novoNo;
+      antigaRaiz->chavePrefixo = raiz->chavePrefixo;
+      antigaRaiz->filhos = raiz->filhos;
+      antigaRaiz->vazio = raiz->vazio;
 
-    //       novoNo->chavePrefixo = restoFrase;
-    //       raiz->filhos.push_back(novoNo);
-    //       return true;
-    //     }
-    //     else
-    //     {
-    //       for (int i = 0; i < raiz->filhos.size(); i++)
-    //       {
-    //         if (getPrefixo(raiz->filhos[i]->chavePrefixo, restoFrase) != "")
-    //         {
-    //           return inserirFrase(raiz->filhos[i], restoFrase);
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
-    // else
-    // {
-    //   No *novaRaiz, *novoNo;
+      novoNo->chavePrefixo = novaFrase;
 
-    //   novoNo->chavePrefixo = novaFrase;
-
-    //   novaRaiz->filhos.push_back(raiz);
-    //   novaRaiz->filhos.push_back(novoNo);
-    //   return true;
-    // }
+      raiz->filhos.push_back(antigaRaiz);
+      raiz->filhos.push_back(novoNo);
+      return true;
+    }
   }
   return false;
 }
 
 int main()
 {
-  No *raiz;
+  // isolar isso em uma funcao - No& criaArvore();
+  No *raiz = (No *)malloc(sizeof(No));
+  raiz->vazio = true;
 
   string frase1 = "fazer bolo de chcolate";
 
   inserirFrase(raiz, "fazer");
+  inserirFrase(raiz, "fazer tarefa");
+  inserirFrase(raiz, "fazer bolo");
+
+  imprimirArvore(raiz);
 
   return 0;
 }
