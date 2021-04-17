@@ -8,7 +8,7 @@ typedef struct NoPatricia
 {
   string chavePrefixo;
   vector<NoPatricia *> filhos;
-  bool vazio = false;
+  bool raiz = false;
 } No;
 
 string getPrefixo(string string1, string string2)
@@ -27,9 +27,15 @@ string getPrefixo(string string1, string string2)
   return "";
 }
 
-void imprimirArvore(No *raiz, long int nivel = 0)
+string removePrefixo(string prefixo, string stringCompleta)
 {
-  if (raiz)
+  string stringSemPrefixo = stringCompleta.substr(prefixo.length(), stringCompleta.length());
+  return stringSemPrefixo;
+}
+
+void imprimirArvore(No *noh, long int nivel = 0)
+{
+  if (noh)
   {
     string espacador = "-";
     for (int i = 0; i < nivel; i++)
@@ -39,106 +45,134 @@ void imprimirArvore(No *raiz, long int nivel = 0)
     espacador += "|";
 
     cout << espacador
-         << " chavePrefixo: "
-         << raiz->chavePrefixo
-         << " | vazio: "
-         << raiz->vazio
+         << " chavePrefixo: '"
+         << noh->chavePrefixo
+         << "' | raiz: "
+         << (noh->raiz ? "sim" : "nao")
          << " | total filhos: "
-         << raiz->filhos.size() << endl;
+         << noh->filhos.size() << endl;
 
-    if (raiz->filhos.size() > 0)
+    if (noh->filhos.size() > 0)
     {
-      for (int index = 0; index < raiz->filhos.size(); index++)
+      for (int index = 0; index < noh->filhos.size(); index++)
       {
-        imprimirArvore(raiz->filhos[index], nivel + 1);
+        imprimirArvore(noh->filhos[index], nivel + 1);
       }
     }
   }
 }
 
-bool inserirFrase(No *raiz, string novaFrase)
+bool inserirFrase(No *noh, string novaFrase)
 {
-  //inserindo na RAIZ, noh vazio
-  if (raiz->vazio)
+  // eh raiz
+  if (noh->raiz)
   {
-    raiz->chavePrefixo = novaFrase;
-    raiz->vazio = false;
+    // procura se algum filho tem prefixo em comum, se houver, insere no filho
+    for (long int index = 0; index < noh->filhos.size(); index++)
+    {
+      No *filhoAtual = noh->filhos[index];
+      string prefixoEmComum = getPrefixo(filhoAtual->chavePrefixo, novaFrase);
 
+      if (prefixoEmComum != "")
+      {
+        return inserirFrase(filhoAtual, novaFrase);
+      }
+    }
+
+    // se nao houver filho com prefixo em comum, é filho do noh atual
+    No *novoFilho = (No *)malloc(sizeof(No));
+    novoFilho->chavePrefixo = novaFrase;
+    noh->filhos.push_back(novoFilho);
     return true;
   }
   else
   {
-    string prefixo = getPrefixo(raiz->chavePrefixo, novaFrase);
-    if (prefixo != "")
+    // procura se algum filho tem prefixo em comum, se houver, insere no filho
+    cout << "atual: " << noh->chavePrefixo << endl;
+    cout << "novaFrase: " << novaFrase << endl;
+    for (long int index = 0; index < noh->filhos.size(); index++)
     {
-      // se for inserido uma frase que seja igual ao noh atual, nao é inserido nada na arvore.
-      if (prefixo == raiz->chavePrefixo && prefixo == novaFrase)
+      No *filhoAtual = noh->filhos[index];
+      string prefixoComumFilhoAtual = getPrefixo(filhoAtual->chavePrefixo, novaFrase);
+
+      string prefixoComumNohAtual = getPrefixo(noh->chavePrefixo, novaFrase);
+      if (prefixoComumNohAtual == noh->chavePrefixo) //prefixoComumFilhoAtual
       {
-        return false;
+        string novaFraseSemPrefixo = removePrefixo(noh->chavePrefixo, novaFrase);
+        string novoprefixoComumFilhoAtual = getPrefixo(filhoAtual->chavePrefixo, novaFraseSemPrefixo);
+        if (novoprefixoComumFilhoAtual != "")
+        {
+          cout << "entrou: " << novaFrase << endl;
+          return inserirFrase(filhoAtual, novaFraseSemPrefixo);
+        }
       }
-      else
+
+      // testa se tem algo em comum com o filho, caso o filho tenha um prefixo completo
+      if (prefixoComumFilhoAtual != "")
       {
-        string restoFrase = novaFrase.substr(prefixo.length(), novaFrase.length());
-        // removendo espaco vazio do inicio da palavra para nao considerar " " como prefixo
-        if (restoFrase[0] == ' ')
-        {
-          restoFrase = restoFrase.substr(1, restoFrase.length());
-        }
-
-        if (raiz->filhos.size() > 0)
-        {
-          // procura nos filhos do noh atual, se a nova frase pode ser neto do no atual
-          // caso seja, insere no filho responsavel e retorna
-          for (int i = 0; i < raiz->filhos.size(); i++)
-          {
-            if (getPrefixo(raiz->filhos[i]->chavePrefixo, restoFrase) != "")
-            {
-              cout << "filho escolhido: " << raiz->filhos[i]->chavePrefixo << endl;
-              cout << "restoFrase" << restoFrase << endl;
-              return inserirFrase(raiz->filhos[i], restoFrase);
-            }
-          }
-        }
-        // caso nao seja neto do noh atual, insere a nova frase como filho do noh atual
-        No *ponteiroNovoNo = (No *)malloc(sizeof(No));
-
-        ponteiroNovoNo->chavePrefixo = restoFrase;
-        raiz->filhos.push_back(ponteiroNovoNo);
-        return true;
+        return inserirFrase(filhoAtual, novaFrase);
       }
     }
-    else
+
+    string prefixoEmComum = getPrefixo(noh->chavePrefixo, novaFrase);
+    cout << "prefixoEmComum: " << prefixoEmComum << endl;
+
+    string novaFraseSemPrefixo = removePrefixo(prefixoEmComum, novaFrase);
+    // cria novo noh com nova frase inserida
+    No *novoFilho = (No *)malloc(sizeof(No));
+    novoFilho->chavePrefixo = novaFraseSemPrefixo;
+    cout << "aqui" << endl;
+
+    // verifica se a nova frase é filho do noh atual
+    string chaveAtualSemPrefixo = removePrefixo(prefixoEmComum, noh->chavePrefixo);
+    if (chaveAtualSemPrefixo == "")
     {
-      No *novoNo = (No *)malloc(sizeof(No));
-      No *antigaRaiz = (No *)malloc(sizeof(No));
+      noh->filhos.push_back(novoFilho);
+      return true;
+    }
 
-      antigaRaiz->chavePrefixo = raiz->chavePrefixo;
-      antigaRaiz->filhos = raiz->filhos;
-      antigaRaiz->vazio = raiz->vazio;
+    // caso nao seja filho, sao irmaos. cria uma raiz com prefixo entre eles
+    if (chaveAtualSemPrefixo != "")
+    {
+      No *novoNohAtual = (No *)malloc(sizeof(No));
+      novoNohAtual->chavePrefixo = chaveAtualSemPrefixo;
+      novoNohAtual->filhos = noh->filhos;
 
-      novoNo->chavePrefixo = novaFrase;
+      noh->chavePrefixo = prefixoEmComum;
+      noh->filhos.clear();
+      noh->filhos.push_back(novoFilho);
+      noh->filhos.push_back(novoNohAtual);
 
-      raiz->filhos.push_back(antigaRaiz);
-      raiz->filhos.push_back(novoNo);
       return true;
     }
   }
   return false;
 }
 
+No *criaArvorePatricia()
+{
+  No *noh = (No *)malloc(sizeof(No));
+  noh->raiz = true;
+  return noh;
+}
+
 int main()
 {
-  // isolar isso em uma funcao - No& criaArvore();
-  No *raiz = (No *)malloc(sizeof(No));
-  raiz->vazio = true;
+  No *arvore = criaArvorePatricia();
 
-  string frase1 = "fazer bolo de chcolate";
+  //inserirFrase(arvore, "fazer massa");
+  //inserirFrase(arvore, "fazer massa italiana");
+  inserirFrase(arvore, "montar mesa");
+  inserirFrase(arvore, "montar mesa quadrada");
+  inserirFrase(arvore, "montar mesa redonda");
+  inserirFrase(arvore, "fazer bolo");
+  inserirFrase(arvore, "faz sol");
+  inserirFrase(arvore, "fazer pao");
+  inserirFrase(arvore, "faz lua");
+  inserirFrase(arvore, "montar");
+  //inserirFrase(arvore, "montaria");
 
-  inserirFrase(raiz, "fazer");
-  inserirFrase(raiz, "fazer tarefa");
-  inserirFrase(raiz, "fazer bolo");
-
-  imprimirArvore(raiz);
+  imprimirArvore(arvore);
 
   return 0;
 }
