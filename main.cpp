@@ -14,11 +14,6 @@ typedef struct NoPatricia
 
 string getPrefixo(string string1, string string2)
 {
-  if (string1 == string2)
-  {
-    return string1;
-  }
-
   string menorString = string1.length() <= string2.length() ? string1 : string2;
   string maiorString = string1.length() > string2.length() ? string1 : string2;
 
@@ -68,6 +63,7 @@ void imprimirArvore(No *noh, long int nivel = 0)
 
 bool inserirFrase(No *noh, string novaFrase)
 {
+  // quando ha tentativa de inserir uma frase fazia
   if (novaFrase == "")
   {
     return false;
@@ -88,6 +84,7 @@ bool inserirFrase(No *noh, string novaFrase)
       }
     }
 
+    // se a novaFrase for igual à algum filho
     for (long int index = 0; index < noh->filhos.size(); index++)
     {
       if (noh->filhos[index]->chavePrefixo == novaFrase)
@@ -227,6 +224,16 @@ void buscar(No *noh, string fraseBusca)
     string intersecao = getPrefixo(noh->chavePrefixo, fraseBusca);
     // frase de busca sem a intersecao
     string fraseBuscaSemIntersecao = removePrefixo(intersecao, fraseBusca);
+    if (noh->chavePrefixo == fraseBusca)
+    {
+      fraseBuscaSemIntersecao = "";
+    }
+
+    if (fraseBuscaSemIntersecao == "")
+    {
+      imprimirArvore(noh);
+      return;
+    }
 
     for (long int index = 0; index < noh->filhos.size(); index++)
     {
@@ -243,6 +250,8 @@ void buscar(No *noh, string fraseBusca)
 
       if (intersecaoComFilhoAtual != "" && fraseBuscaSemIntersecao != filhoAtual->chavePrefixo)
       {
+        //cout << "indo buscar frase sem intersecao: '" << fraseBuscaSemIntersecao << "'" << endl;
+        //cout << "filhoAtual: '" << filhoAtual->chavePrefixo << "'" << endl;
         buscar(filhoAtual, fraseBuscaSemIntersecao);
         return;
       }
@@ -256,32 +265,39 @@ int main()
 
   inserirFrase(arvore, "fazer massa");
   inserirFrase(arvore, "fazer massa italiana");
+  inserirFrase(arvore, "fazer massa italiana rosa");
   inserirFrase(arvore, "fazer bolo");
   inserirFrase(arvore, "fazer pao");
   inserirFrase(arvore, "montar mesa");
   inserirFrase(arvore, "montar mesa quadrada");
   inserirFrase(arvore, "montar mesa redonda");
-  //inserirFrase(arvore, "faz sol");
-  //inserirFrase(arvore, "faz lua");
-  //inserirFrase(arvore, "montar");
-  //inserirFrase(arvore, "assistir shrek 2");
-  //inserirFrase(arvore, "montaria");
-  //inserirFrase(arvore, "montaria");
-  //inserirFrase(arvore, "");
-  //inserirFrase(arvore, "montar mesa quadrada com vaso em cima");
-  //inserirFrase(arvore, "montar mesa quadrada com vaso embaixo");
+  inserirFrase(arvore, "faz sol");
+  inserirFrase(arvore, "faz lua");
+  inserirFrase(arvore, "montar");
+  inserirFrase(arvore, "assistir shrek 2");
+  inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "");
+  inserirFrase(arvore, "montar mesa quadrada com vaso em cima");
+  inserirFrase(arvore, "montar mesa quadrada com vaso embaixo");
 
-  //imprimirArvore(arvore);
-  cout << "busca: fazer bolo" << endl;
-  buscar(arvore, "fazer bolo");
-  cout << endl;
+  imprimirArvore(arvore);
 
-  cout << "busca: fazer" << endl;
-  buscar(arvore, "fazer");
-  cout << endl;
-
-  cout << "busca: fazer massa italiana" << endl;
-  buscar(arvore, "fazer massa italiana");
+  cout << "busca: fazer ma" << endl;
+  buscar(arvore, "fazer ma");
   cout << endl;
   return 0;
 }
