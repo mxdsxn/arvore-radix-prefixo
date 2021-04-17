@@ -193,6 +193,23 @@ No *criaArvorePatricia()
   return noh;
 }
 
+void imprimirBusca(No *noh, string prefixo = "")
+{
+  if (noh)
+  {
+    if (noh->finalFrase)
+    {
+      cout << prefixo << noh->chavePrefixo << endl;
+    }
+    for (int index = 0; index < noh->filhos.size(); index++)
+    {
+      string novoPrefixo = prefixo + noh->chavePrefixo;
+      No *filhoAtual = noh->filhos[index];
+      imprimirBusca(filhoAtual, novoPrefixo);
+    }
+  }
+}
+
 void buscar(No *noh, string fraseBusca)
 {
   if (noh->raiz)
@@ -277,27 +294,14 @@ int main()
   inserirFrase(arvore, "assistir shrek 2");
   inserirFrase(arvore, "montaria");
   inserirFrase(arvore, "montaria");
-  inserirFrase(arvore, "montaria");
-  inserirFrase(arvore, "montaria");
-  inserirFrase(arvore, "montaria");
-  inserirFrase(arvore, "montaria");
-  inserirFrase(arvore, "montaria");
-  inserirFrase(arvore, "montaria");
-  inserirFrase(arvore, "montaria");
-  inserirFrase(arvore, "montaria");
-  inserirFrase(arvore, "montaria");
-  inserirFrase(arvore, "montaria");
-  inserirFrase(arvore, "montaria");
-  inserirFrase(arvore, "montaria");
-  inserirFrase(arvore, "montaria");
   inserirFrase(arvore, "");
   inserirFrase(arvore, "montar mesa quadrada com vaso em cima");
   inserirFrase(arvore, "montar mesa quadrada com vaso embaixo");
+  //imprimirArvore(arvore);
 
-  imprimirArvore(arvore);
-
-  cout << "busca: fazer ma" << endl;
-  buscar(arvore, "fazer ma");
+  cout << "busca: fazer" << endl;
+  buscar(arvore, "fazer");
   cout << endl;
+
   return 0;
 }
