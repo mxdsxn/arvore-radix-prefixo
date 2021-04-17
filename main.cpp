@@ -14,6 +14,11 @@ typedef struct NoPatricia
 
 string getPrefixo(string string1, string string2)
 {
+  if (string1 == string2)
+  {
+    return string1;
+  }
+
   string menorString = string1.length() <= string2.length() ? string1 : string2;
   string maiorString = string1.length() > string2.length() ? string1 : string2;
 
@@ -191,28 +196,92 @@ No *criaArvorePatricia()
   return noh;
 }
 
+void buscar(No *noh, string fraseBusca)
+{
+  if (noh->raiz)
+  {
+    for (long int index = 0; index < noh->filhos.size(); index++)
+    {
+      No *filhoAtual = noh->filhos[index];
+      string intersecao = getPrefixo(filhoAtual->chavePrefixo, fraseBusca);
+      string fraseSemIntersecao = removePrefixo(intersecao, fraseBusca);
+
+      // se houver intersecao entre filhoAtual e a frase de busca, e nao houver mais palavras alem da intersecao
+      if (intersecao != "" && fraseSemIntersecao == "")
+      {
+        imprimirArvore(filhoAtual);
+        return;
+      }
+
+      // se houver intersecao entre filhoAtual e frase de busca, e houver mais palavras na busca alem da intersecao
+      if (intersecao != "" && fraseSemIntersecao != "")
+      {
+        buscar(filhoAtual, fraseBusca);
+        return;
+      }
+    }
+  }
+  else
+  {
+    // intersecao entre o noh atual e a busca
+    string intersecao = getPrefixo(noh->chavePrefixo, fraseBusca);
+    // frase de busca sem a intersecao
+    string fraseBuscaSemIntersecao = removePrefixo(intersecao, fraseBusca);
+
+    for (long int index = 0; index < noh->filhos.size(); index++)
+    {
+      No *filhoAtual = noh->filhos[index];
+
+      string intersecaoComFilhoAtual = getPrefixo(filhoAtual->chavePrefixo, fraseBuscaSemIntersecao);
+
+      // houve intersecao com o filho e chave do filho atual igual a frase de busca sem a intersecao
+      if (intersecaoComFilhoAtual != "" && fraseBuscaSemIntersecao == filhoAtual->chavePrefixo)
+      {
+        imprimirArvore(filhoAtual);
+        return;
+      }
+
+      if (intersecaoComFilhoAtual != "" && fraseBuscaSemIntersecao != filhoAtual->chavePrefixo)
+      {
+        buscar(filhoAtual, fraseBuscaSemIntersecao);
+        return;
+      }
+    }
+  }
+}
+
 int main()
 {
   No *arvore = criaArvorePatricia();
 
-  inserirFrase(arvore, "fazer massa italiana");
   inserirFrase(arvore, "fazer massa");
-  inserirFrase(arvore, "montar mesa");
+  inserirFrase(arvore, "fazer massa italiana");
   inserirFrase(arvore, "fazer bolo");
+  inserirFrase(arvore, "fazer pao");
+  inserirFrase(arvore, "montar mesa");
   inserirFrase(arvore, "montar mesa quadrada");
   inserirFrase(arvore, "montar mesa redonda");
-  inserirFrase(arvore, "faz sol");
-  inserirFrase(arvore, "fazer pao");
-  inserirFrase(arvore, "faz lua");
-  inserirFrase(arvore, "montar");
-  inserirFrase(arvore, "assistir shrek 2");
-  inserirFrase(arvore, "montaria");
-  inserirFrase(arvore, "montaria");
-  inserirFrase(arvore, "");
-  inserirFrase(arvore, "montar mesa quadrada com vaso em cima");
-  inserirFrase(arvore, "montar mesa quadrada com vaso embaixo");
+  //inserirFrase(arvore, "faz sol");
+  //inserirFrase(arvore, "faz lua");
+  //inserirFrase(arvore, "montar");
+  //inserirFrase(arvore, "assistir shrek 2");
+  //inserirFrase(arvore, "montaria");
+  //inserirFrase(arvore, "montaria");
+  //inserirFrase(arvore, "");
+  //inserirFrase(arvore, "montar mesa quadrada com vaso em cima");
+  //inserirFrase(arvore, "montar mesa quadrada com vaso embaixo");
 
-  imprimirArvore(arvore);
+  //imprimirArvore(arvore);
+  cout << "busca: fazer bolo" << endl;
+  buscar(arvore, "fazer bolo");
+  cout << endl;
 
+  cout << "busca: fazer" << endl;
+  buscar(arvore, "fazer");
+  cout << endl;
+
+  cout << "busca: fazer massa italiana" << endl;
+  buscar(arvore, "fazer massa italiana");
+  cout << endl;
   return 0;
 }
