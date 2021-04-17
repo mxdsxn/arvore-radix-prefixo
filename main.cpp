@@ -9,6 +9,7 @@ typedef struct NoPatricia
   string chavePrefixo;
   vector<NoPatricia *> filhos;
   bool raiz = false;
+  bool finalFrase = false;
 } No;
 
 string getPrefixo(string string1, string string2)
@@ -47,10 +48,8 @@ void imprimirArvore(No *noh, long int nivel = 0)
     cout << espacador
          << " chavePrefixo: '"
          << noh->chavePrefixo
-         << "' | raiz: "
-         << (noh->raiz ? "sim" : "nao")
-         << " | total filhos: "
-         << noh->filhos.size() << endl;
+         << "' | final frase: "
+         << (noh->finalFrase ? "sim" : "nao") << endl;
 
     if (noh->filhos.size() > 0)
     {
@@ -64,6 +63,11 @@ void imprimirArvore(No *noh, long int nivel = 0)
 
 bool inserirFrase(No *noh, string novaFrase)
 {
+  if (novaFrase == "")
+  {
+    return false;
+  }
+
   // eh raiz
   if (noh->raiz)
   {
@@ -79,17 +83,41 @@ bool inserirFrase(No *noh, string novaFrase)
       }
     }
 
+    for (long int index = 0; index < noh->filhos.size(); index++)
+    {
+      if (noh->filhos[index]->chavePrefixo == novaFrase)
+      {
+        return false;
+      }
+    }
+
     // se nao houver filho com prefixo em comum, é filho do noh atual
     No *novoFilho = (No *)malloc(sizeof(No));
     novoFilho->chavePrefixo = novaFrase;
+    novoFilho->finalFrase = true;
     noh->filhos.push_back(novoFilho);
     return true;
   }
   else
   {
+    string prefixoAleatorio = getPrefixo(novaFrase, noh->chavePrefixo);
+    if (prefixoAleatorio == novaFrase)
+    {
+      string antigaFraseSemPrefixo = removePrefixo(prefixoAleatorio, noh->chavePrefixo);
+      No *novoFilho = (No *)malloc(sizeof(No));
+      novoFilho->chavePrefixo = antigaFraseSemPrefixo;
+      novoFilho->filhos = noh->filhos;
+      novoFilho->finalFrase = noh->finalFrase;
+
+      noh->chavePrefixo = prefixoAleatorio;
+      noh->finalFrase = true;
+      noh->filhos.clear();
+      noh->filhos.push_back(novoFilho);
+
+      return true;
+    }
+
     // procura se algum filho tem prefixo em comum, se houver, insere no filho
-    cout << "atual: " << noh->chavePrefixo << endl;
-    cout << "novaFrase: " << novaFrase << endl;
     for (long int index = 0; index < noh->filhos.size(); index++)
     {
       No *filhoAtual = noh->filhos[index];
@@ -102,7 +130,6 @@ bool inserirFrase(No *noh, string novaFrase)
         string novoprefixoComumFilhoAtual = getPrefixo(filhoAtual->chavePrefixo, novaFraseSemPrefixo);
         if (novoprefixoComumFilhoAtual != "")
         {
-          cout << "entrou: " << novaFrase << endl;
           return inserirFrase(filhoAtual, novaFraseSemPrefixo);
         }
       }
@@ -115,13 +142,19 @@ bool inserirFrase(No *noh, string novaFrase)
     }
 
     string prefixoEmComum = getPrefixo(noh->chavePrefixo, novaFrase);
-    cout << "prefixoEmComum: " << prefixoEmComum << endl;
 
     string novaFraseSemPrefixo = removePrefixo(prefixoEmComum, novaFrase);
+    for (long int index = 0; index < noh->filhos.size(); index++)
+    {
+      if (noh->filhos[index]->chavePrefixo == novaFraseSemPrefixo)
+      {
+        return false;
+      }
+    }
     // cria novo noh com nova frase inserida
     No *novoFilho = (No *)malloc(sizeof(No));
     novoFilho->chavePrefixo = novaFraseSemPrefixo;
-    cout << "aqui" << endl;
+    novoFilho->finalFrase = true;
 
     // verifica se a nova frase é filho do noh atual
     string chaveAtualSemPrefixo = removePrefixo(prefixoEmComum, noh->chavePrefixo);
@@ -137,8 +170,10 @@ bool inserirFrase(No *noh, string novaFrase)
       No *novoNohAtual = (No *)malloc(sizeof(No));
       novoNohAtual->chavePrefixo = chaveAtualSemPrefixo;
       novoNohAtual->filhos = noh->filhos;
+      novoNohAtual->finalFrase = noh->finalFrase;
 
       noh->chavePrefixo = prefixoEmComum;
+      noh->finalFrase = false;
       noh->filhos.clear();
       noh->filhos.push_back(novoFilho);
       noh->filhos.push_back(novoNohAtual);
@@ -160,17 +195,22 @@ int main()
 {
   No *arvore = criaArvorePatricia();
 
-  //inserirFrase(arvore, "fazer massa");
-  //inserirFrase(arvore, "fazer massa italiana");
+  inserirFrase(arvore, "fazer massa italiana");
+  inserirFrase(arvore, "fazer massa");
   inserirFrase(arvore, "montar mesa");
+  inserirFrase(arvore, "fazer bolo");
   inserirFrase(arvore, "montar mesa quadrada");
   inserirFrase(arvore, "montar mesa redonda");
-  inserirFrase(arvore, "fazer bolo");
   inserirFrase(arvore, "faz sol");
   inserirFrase(arvore, "fazer pao");
   inserirFrase(arvore, "faz lua");
   inserirFrase(arvore, "montar");
-  //inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "assistir shrek 2");
+  inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "montaria");
+  inserirFrase(arvore, "");
+  inserirFrase(arvore, "montar mesa quadrada com vaso em cima");
+  inserirFrase(arvore, "montar mesa quadrada com vaso embaixo");
 
   imprimirArvore(arvore);
 
