@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstring>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -40,6 +42,22 @@ string removePrefixo(string prefixo, string stringCompleta)
   string stringSemPrefixo = stringCompleta.substr(prefixo.length(), stringCompleta.length());
   //cout << "erro " << stringSemPrefixo << endl;
   return stringSemPrefixo;
+}
+
+bool comparaNo(No *nohA, No *nohB)
+{
+  int resultado = strcmp(nohA->chavePrefixo.c_str(), nohB->chavePrefixo.c_str());
+
+  if (resultado < 0)
+  {
+    return true;
+  }
+  return false;
+}
+
+void sortFilhosNo(No *noh)
+{
+  sort(noh->filhos.begin(), noh->filhos.end(), comparaNo);
 }
 
 void imprimirArvore(No *noh, long int nivel = 0)
@@ -186,6 +204,7 @@ bool inserir(No *noh, string novaFrase)
     novoFilho->chavePrefixo = novaFrase;
     novoFilho->finalFrase = true;
     noh->filhos.push_back(novoFilho);
+    sortFilhosNo(noh);
 
     return true;
   }
@@ -218,6 +237,8 @@ bool inserir(No *noh, string novaFrase)
       noh->filhos.clear();
       noh->filhos.push_back(novoFilho);
       noh->filhos.push_back(novoIrmao);
+      sortFilhosNo(noh);
+
       return true;
     }
     // cenario: quando a novaFrase eh pai do noh atual
@@ -233,6 +254,8 @@ bool inserir(No *noh, string novaFrase)
       noh->finalFrase = true;
       noh->filhos.clear();
       noh->filhos.push_back(novoFilho);
+      sortFilhosNo(noh);
+
       return true;
     }
 
@@ -252,6 +275,8 @@ bool inserir(No *noh, string novaFrase)
     novoFilho->chavePrefixo = novaFraseSemPrefixo;
     novoFilho->finalFrase = true;
     noh->filhos.push_back(novoFilho);
+    sortFilhosNo(noh);
+
     return true;
   }
   return false;
@@ -326,9 +351,8 @@ int main()
   inserir(arvore, "faz");
   inserir(arvore, "montar mesa quadrada com vaso embaixo");
 
-  //imprimirArvore(arvore);
-
-  busca(arvore);
+  imprimirArvore(arvore);
+  //busca(arvore);
 
   return 0;
 }
