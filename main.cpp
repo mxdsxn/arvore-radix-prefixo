@@ -104,7 +104,7 @@ void imprimirBusca(No *noh, string prefixo = "")
   }
 }
 
-bool buscar(No *noh, string fraseBusca)
+bool buscar(No *noh, string fraseBusca, string defaultPrefixo = "")
 {
   if (noh->raiz)
   {
@@ -117,14 +117,15 @@ bool buscar(No *noh, string fraseBusca)
       // se houver intersecao entre filhoAtual e a frase de busca, e nao houver mais palavras alem da intersecao
       if (intersecao != "" && fraseSemIntersecao == "")
       {
-        imprimirBusca(filhoAtual);
+        imprimirBusca(filhoAtual, defaultPrefixo);
         return true;
       }
 
       // se houver intersecao entre filhoAtual e frase de busca, e houver mais palavras na busca alem da intersecao
       if (intersecao != "" && fraseSemIntersecao != "")
       {
-        return buscar(filhoAtual, fraseBusca);
+        cout << "aqui" << endl;
+        return buscar(filhoAtual, fraseBusca, noh->chavePrefixo);
       }
     }
   }
@@ -139,9 +140,10 @@ bool buscar(No *noh, string fraseBusca)
       fraseBuscaSemIntersecao = "";
     }
 
+    // quando a frase busca eh igual ao noh atual
     if (fraseBuscaSemIntersecao == "")
     {
-      imprimirBusca(noh);
+      imprimirBusca(noh, defaultPrefixo);
       return true;
     }
 
@@ -154,13 +156,14 @@ bool buscar(No *noh, string fraseBusca)
       // houve intersecao com o filho e chave do filho atual igual a frase de busca sem a intersecao
       if (intersecaoComFilhoAtual != "" && fraseBuscaSemIntersecao == filhoAtual->chavePrefixo)
       {
-        imprimirBusca(filhoAtual);
+        imprimirBusca(filhoAtual, defaultPrefixo + noh->chavePrefixo);
         return true;
       }
 
+      // houve intersecao com filho e ainda resta palavras para serem buscadas
       if (intersecaoComFilhoAtual != "" && fraseBuscaSemIntersecao != filhoAtual->chavePrefixo)
       {
-        return buscar(filhoAtual, fraseBuscaSemIntersecao);
+        return buscar(filhoAtual, fraseBuscaSemIntersecao, defaultPrefixo + noh->chavePrefixo);
       }
     }
   }
@@ -188,12 +191,9 @@ bool inserir(No *noh, string novaFrase)
       {
         return inserir(filhoAtual, novaFrase);
       }
-    }
 
-    // se a novaFrase for igual à algum filho
-    for (long int index = 0; index < noh->filhos.size(); index++)
-    {
-      if (noh->filhos[index]->chavePrefixo == novaFrase)
+      // se a novaFrase for igual à algum filho
+      if (filhoAtual->chavePrefixo == novaFrase)
       {
         return false;
       }
@@ -351,8 +351,8 @@ int main()
   inserir(arvore, "faz");
   inserir(arvore, "montar mesa quadrada com vaso embaixo");
 
-  imprimirArvore(arvore);
-  //busca(arvore);
+  //imprimirArvore(arvore);
+  busca(arvore);
 
   return 0;
 }
