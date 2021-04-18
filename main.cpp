@@ -86,7 +86,7 @@ void imprimirBusca(No *noh, string prefixo = "")
   }
 }
 
-void buscar(No *noh, string fraseBusca)
+bool buscar(No *noh, string fraseBusca)
 {
   if (noh->raiz)
   {
@@ -100,14 +100,13 @@ void buscar(No *noh, string fraseBusca)
       if (intersecao != "" && fraseSemIntersecao == "")
       {
         imprimirBusca(filhoAtual);
-        return;
+        return true;
       }
 
       // se houver intersecao entre filhoAtual e frase de busca, e houver mais palavras na busca alem da intersecao
       if (intersecao != "" && fraseSemIntersecao != "")
       {
-        buscar(filhoAtual, fraseBusca);
-        return;
+        return buscar(filhoAtual, fraseBusca);
       }
     }
   }
@@ -125,7 +124,7 @@ void buscar(No *noh, string fraseBusca)
     if (fraseBuscaSemIntersecao == "")
     {
       imprimirBusca(noh);
-      return;
+      return true;
     }
 
     for (long int index = 0; index < noh->filhos.size(); index++)
@@ -138,17 +137,16 @@ void buscar(No *noh, string fraseBusca)
       if (intersecaoComFilhoAtual != "" && fraseBuscaSemIntersecao == filhoAtual->chavePrefixo)
       {
         imprimirBusca(filhoAtual);
-        return;
+        return true;
       }
 
       if (intersecaoComFilhoAtual != "" && fraseBuscaSemIntersecao != filhoAtual->chavePrefixo)
       {
-        cout << "aqui" << endl;
-        buscar(filhoAtual, fraseBuscaSemIntersecao);
-        return;
+        return buscar(filhoAtual, fraseBuscaSemIntersecao);
       }
     }
   }
+  return false;
 }
 
 bool inserir(No *noh, string novaFrase)
@@ -266,6 +264,23 @@ No *criaArvorePatricia()
   return noh;
 }
 
+void busca(No *arvore)
+{
+  string fraseBusca;
+
+  cout << "Busque uma frase:" << endl;
+  getline(cin, fraseBusca);
+
+  cout << "busca: '" << fraseBusca << "'" << endl;
+
+  bool resultado = buscar(arvore, fraseBusca);
+  if (!resultado)
+  {
+    cout << "Nao ha resultados para essa busca." << endl;
+  }
+  cout << endl;
+}
+
 int main()
 {
   No *arvore = criaArvorePatricia();
@@ -311,18 +326,9 @@ int main()
   inserir(arvore, "faz");
   inserir(arvore, "montar mesa quadrada com vaso embaixo");
 
-  cout << endl;
+  //imprimirArvore(arvore);
 
-  imprimirArvore(arvore);
-
-  string fraseBusca;
-
-  cout << "Busque uma frase:" << endl;
-  getline(cin, fraseBusca);
-
-  cout << "busca: '" << fraseBusca << "'" << endl;
-  buscar(arvore, fraseBusca);
-  cout << endl;
+  busca(arvore);
 
   return 0;
 }
