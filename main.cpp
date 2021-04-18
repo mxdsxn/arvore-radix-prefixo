@@ -35,7 +35,10 @@ string getPrefixo(string string1, string string2)
 
 string removePrefixo(string prefixo, string stringCompleta)
 {
+  //cout << "prefixo: '" << prefixo << "'" << endl;
+  //cout << "stringCompleta: '" << stringCompleta << "'" << endl;
   string stringSemPrefixo = stringCompleta.substr(prefixo.length(), stringCompleta.length());
+  //cout << "erro " << stringSemPrefixo << endl;
   return stringSemPrefixo;
 }
 
@@ -185,98 +188,73 @@ bool inserir(No *noh, string novaFrase)
     novoFilho->chavePrefixo = novaFrase;
     novoFilho->finalFrase = true;
     noh->filhos.push_back(novoFilho);
+
     return true;
   }
   else
   {
-    // quando a nova frase exatamente o prefixo entre ela e o noh atual
-    string prefixoAleatorio = getPrefixo(novaFrase, noh->chavePrefixo);
-    if (prefixoAleatorio == novaFrase)
-    {
-      // caso seja uma chave repetida
-      if (novaFrase == noh->chavePrefixo)
-      {
-        noh->finalFrase = true;
-        return false;
-      }
+    string prefixoComum = getPrefixo(noh->chavePrefixo, novaFrase);
+    string novaFraseSemPrefixo = removePrefixo(prefixoComum, novaFrase);
 
-      string antigaFraseSemPrefixo = removePrefixo(prefixoAleatorio, noh->chavePrefixo);
-      No *novoFilho = (No *)malloc(sizeof(No));
-      novoFilho->chavePrefixo = antigaFraseSemPrefixo;
-      novoFilho->filhos = noh->filhos;
-      novoFilho->finalFrase = noh->finalFrase;
-      noh->chavePrefixo = prefixoAleatorio;
+    if (novaFrase == noh->chavePrefixo)
+    {
       noh->finalFrase = true;
-      noh->filhos.clear();
-      noh->filhos.push_back(novoFilho);
-
-      return true;
+      return false;
     }
 
-    // procura se algum filho tem prefixo em comum, se houver, insere no filho
-    for (long int index = 0; index < noh->filhos.size(); index++)
+    // cenario: quando a novaFrase eh irma do noh atual
+    if (novaFraseSemPrefixo != "" && prefixoComum != "" && prefixoComum != noh->chavePrefixo)
     {
-      No *filhoAtual = noh->filhos[index];
-      string prefixoComumFilhoAtual = getPrefixo(filhoAtual->chavePrefixo, novaFrase);
+      No *novoFilho = (No *)malloc(sizeof(No));
+      novoFilho->chavePrefixo = novaFraseSemPrefixo;
+      novoFilho->finalFrase = true;
 
-      string prefixoComumNohAtual = getPrefixo(noh->chavePrefixo, novaFrase);
-      if (prefixoComumNohAtual == noh->chavePrefixo)
-      {
-        string novaFraseSemPrefixo = removePrefixo(noh->chavePrefixo, novaFrase);
-        string novoPrefixoComumFilhoAtual = getPrefixo(filhoAtual->chavePrefixo, novaFraseSemPrefixo);
-        if (novoPrefixoComumFilhoAtual != "")
-        {
-          return inserir(filhoAtual, novaFraseSemPrefixo);
-        }
-      }
+      No *novoIrmao = (No *)malloc(sizeof(No));
+      string prefixoRemovido = removePrefixo(prefixoComum, noh->chavePrefixo);
+      novoIrmao->chavePrefixo = prefixoRemovido;
+      novoIrmao->finalFrase = noh->finalFrase;
+      novoIrmao->filhos = noh->filhos;
 
-      // testa se tem algo em comum com o filho, caso o filho tenha um prefixo completo
-      if (prefixoComumFilhoAtual != "")
-      {
-        return inserir(filhoAtual, novaFrase);
-      }
-    }
-    string prefixoEmComum = getPrefixo(noh->chavePrefixo, novaFrase);
-
-    string novaFraseSemPrefixo = removePrefixo(prefixoEmComum, novaFrase);
-
-    for (long int index = 0; index < noh->filhos.size(); index++)
-    {
-      if (noh->filhos[index]->chavePrefixo == novaFraseSemPrefixo)
-      {
-        return false;
-      }
-    }
-
-    // cria novo noh com nova frase inserida
-    No *novoFilho = (No *)malloc(sizeof(No));
-    novoFilho->chavePrefixo = novaFraseSemPrefixo;
-    novoFilho->finalFrase = true;
-
-    // verifica se a nova frase é filho do noh atual
-    string chaveAtualSemPrefixo = removePrefixo(prefixoEmComum, noh->chavePrefixo);
-    if (chaveAtualSemPrefixo == "")
-    {
-      noh->filhos.push_back(novoFilho);
-      return true;
-    }
-
-    // caso nao seja filho, sao irmaos. cria uma raiz com prefixo entre eles
-    if (chaveAtualSemPrefixo != "")
-    {
-      No *novoNohAtual = (No *)malloc(sizeof(No));
-      novoNohAtual->chavePrefixo = chaveAtualSemPrefixo;
-      novoNohAtual->filhos = noh->filhos;
-      novoNohAtual->finalFrase = noh->finalFrase;
-
-      noh->chavePrefixo = prefixoEmComum;
+      noh->chavePrefixo = prefixoComum;
       noh->finalFrase = false;
       noh->filhos.clear();
       noh->filhos.push_back(novoFilho);
-      noh->filhos.push_back(novoNohAtual);
-
+      noh->filhos.push_back(novoIrmao);
       return true;
     }
+    // cenario: quando a novaFrase eh pai do noh atual
+    else if (novaFraseSemPrefixo == "" && prefixoComum != "" && prefixoComum != noh->chavePrefixo)
+    {
+      No *novoFilho = (No *)malloc(sizeof(No));
+      string prefixoRemovido = removePrefixo(prefixoComum, noh->chavePrefixo);
+      novoFilho->chavePrefixo = prefixoRemovido;
+      novoFilho->finalFrase = noh->finalFrase;
+      novoFilho->filhos = noh->filhos;
+
+      noh->chavePrefixo = prefixoComum;
+      noh->finalFrase = true;
+      noh->filhos.clear();
+      noh->filhos.push_back(novoFilho);
+      return true;
+    }
+
+    // cenario: quando a novaFrase tem intersecao com algum filho do noh atual, ou seja, neto
+    for (long int index = 0; index < noh->filhos.size(); index++)
+    {
+      No *filhoAtual = noh->filhos[index];
+      string intersecaoFilhoFrase = getPrefixo(filhoAtual->chavePrefixo, novaFraseSemPrefixo);
+
+      if (intersecaoFilhoFrase != "")
+      {
+        return inserir(filhoAtual, novaFraseSemPrefixo);
+      }
+    }
+
+    No *novoFilho = (No *)malloc(sizeof(No));
+    novoFilho->chavePrefixo = novaFraseSemPrefixo;
+    novoFilho->finalFrase = true;
+    noh->filhos.push_back(novoFilho);
+    return true;
   }
   return false;
 }
@@ -293,9 +271,28 @@ int main()
   No *arvore = criaArvorePatricia();
 
   inserir(arvore, "montar mesa quadrada com vaso em cima");
+  inserir(arvore, "montar mesa quadrada");
+  inserir(arvore, "montar mesa");
+  inserir(arvore, "montar mesa redonda");
+  inserir(arvore, "");
+  inserir(arvore, "montar");
+  inserir(arvore, "montaria");
+  inserir(arvore, "montar mesa quadrada com vaso embaixo");
+  inserir(arvore, "fazer massa italiana rosa");
+  inserir(arvore, "faz lua");
+  inserir(arvore, "assistir shrek 2");
+  inserir(arvore, "faz");
+  inserir(arvore, "fazer bolo");
+  inserir(arvore, "fazer pao");
+  inserir(arvore, "faz sol");
   inserir(arvore, "fazer massa italiana");
   inserir(arvore, "fazer massa");
-  inserir(arvore, "montar mesa quadrada");
+  inserir(arvore, " quadrada");
+  inserir(arvore, "fazer massa italiana");
+  inserir(arvore, "fazer massa");
+  inserir(arvore, " redonda");
+  inserir(arvore, " ");
+  inserir(arvore, " quadrada rosa");
   inserir(arvore, "fazer bolo");
   inserir(arvore, "fazer pao");
   inserir(arvore, "faz sol");
@@ -314,12 +311,15 @@ int main()
   inserir(arvore, "faz");
   inserir(arvore, "montar mesa quadrada com vaso embaixo");
 
-  imprimirArvore(arvore);
   cout << endl;
 
+  imprimirArvore(arvore);
+
   string fraseBusca;
+
   cout << "Busque uma frase:" << endl;
   getline(cin, fraseBusca);
+
   cout << "busca: '" << fraseBusca << "'" << endl;
   buscar(arvore, fraseBusca);
   cout << endl;
