@@ -321,12 +321,15 @@ bool remover(No *noh, string removeFrase)
       string intersecaoFilhoFrase = getPrefixo(filhoAtual->chavePrefixo, removeFrase);
       string removeFraseSemPrefixo = removePrefixo(intersecaoFilhoFrase, removeFrase);
 
+      // se a frase a ser removida for igual à chave do filho atual E esse filho atual tambem for um final de frase
       if (removeFrase == filhoAtual->chavePrefixo && filhoAtual->finalFrase)
       {
+        // caso esse filhoAtual nao tenha nenhum filho(neto do atual), ele é removido
         if (filhoAtual->filhos.size() == 0)
         {
           noh->filhos.erase(noh->filhos.begin() + index);
 
+          // se o noh atual ficou apenas com 1 filho, ele puxa esse filho pra cima, caso o noh nao seja a raiz
           if (noh->filhos.size() == 1 && noh->finalFrase == false && !noh->raiz)
           {
             noh->chavePrefixo += noh->filhos[0]->chavePrefixo;
@@ -335,6 +338,7 @@ bool remover(No *noh, string removeFrase)
           }
           return true;
         }
+        // caso o filhoAtual ainda tenha 1 filho(neto do atual), ele puxa o neto pra cima, absorvendo as informacoes e remove esse filho(neto do atual)
         else if (filhoAtual->filhos.size() == 1)
         {
           filhoAtual->chavePrefixo += filhoAtual->filhos[0]->chavePrefixo;
@@ -342,15 +346,19 @@ bool remover(No *noh, string removeFrase)
           filhoAtual->filhos = filhoAtual->filhos[0]->filhos;
           return true;
         }
+        // caso o filhoAtual tenha mais de 1 filho, ele simplesmente deixa de ser um final de frase, mantendo se com prefixo entre os seus filhos(neto do atual)
         else if (filhoAtual->filhos.size() > 1)
         {
           filhoAtual->finalFrase = false;
           return true;
         }
       }
+      // se houver intersecao com o filho atual, ou seja, ainda há resto da frase para ser pesquisada, ele desce a pesquisa 1 nivel.
       else if (intersecaoFilhoFrase == filhoAtual->chavePrefixo)
       {
         bool result = remover(filhoAtual, removeFraseSemPrefixo);
+
+        // faz verificao do caso em que o filhoAtual fique sem filhos(neto do atual) e esse filhoAtual nao é um final de frase, ele remove esse prefixo sem filhos e que nao é final de frase
         if (filhoAtual->filhos.size() == 0 && filhoAtual->finalFrase == false)
         {
           noh->filhos.erase(noh->filhos.begin() + index);
