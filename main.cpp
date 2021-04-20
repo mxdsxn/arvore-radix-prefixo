@@ -67,7 +67,7 @@ void imprimirArvore(No *noh, long int nivel = 0)
     string espacador = "-";
     for (int i = 0; i < nivel; i++)
     {
-      espacador += espacador;
+      espacador += "--";
     }
     espacador += "|";
 
@@ -306,6 +306,62 @@ void busca(No *arvore)
   cout << endl;
 }
 
+bool remover(No *noh, string removeFrase)
+{
+  if (noh)
+  {
+    if (removeFrase == "")
+    {
+      return false;
+    }
+
+    for (int index = 0; index < noh->filhos.size(); index++)
+    {
+      No *filhoAtual = noh->filhos[index];
+      string intersecaoFilhoFrase = getPrefixo(filhoAtual->chavePrefixo, removeFrase);
+      string removeFraseSemPrefixo = removePrefixo(intersecaoFilhoFrase, removeFrase);
+
+      if (removeFrase == filhoAtual->chavePrefixo && filhoAtual->finalFrase)
+      {
+        if (filhoAtual->filhos.size() == 0)
+        {
+          noh->filhos.erase(noh->filhos.begin() + index);
+
+          if (noh->filhos.size() == 1 && noh->finalFrase == false && !noh->raiz)
+          {
+            noh->chavePrefixo += noh->filhos[0]->chavePrefixo;
+            noh->finalFrase = noh->filhos[0]->finalFrase;
+            noh->filhos = noh->filhos[0]->filhos;
+          }
+          return true;
+        }
+        else if (filhoAtual->filhos.size() == 1)
+        {
+          filhoAtual->chavePrefixo += filhoAtual->filhos[0]->chavePrefixo;
+          filhoAtual->finalFrase = filhoAtual->filhos[0]->finalFrase;
+          filhoAtual->filhos = filhoAtual->filhos[0]->filhos;
+          return true;
+        }
+        else if (filhoAtual->filhos.size() > 1)
+        {
+          filhoAtual->finalFrase = false;
+          return true;
+        }
+      }
+      else if (intersecaoFilhoFrase == filhoAtual->chavePrefixo)
+      {
+        bool result = remover(filhoAtual, removeFraseSemPrefixo);
+        if (filhoAtual->filhos.size() == 0 && filhoAtual->finalFrase == false)
+        {
+          noh->filhos.erase(noh->filhos.begin() + index);
+        }
+        return result;
+      }
+    }
+  }
+  return false;
+}
+
 int main()
 {
   No *arvore = criaArvorePatricia();
@@ -349,10 +405,27 @@ int main()
   inserir(arvore, "montaria");
   inserir(arvore, "montaria");
   inserir(arvore, "faz");
-  inserir(arvore, "montar mesa quadrada com vaso embaixo");
+  inserir(arvore, "faz sol");
+  inserir(arvore, "montar mesa quadrada com vaso em baixo");
+  inserir(arvore, "montar mesa quadrada com vaso em nada");
+  inserir(arvore, "montar mesa redonda roxa");
 
-  //imprimirArvore(arvore);
-  busca(arvore);
+  imprimirArvore(arvore);
+
+  //busca(arvore);
+  string remove;
+  do
+  {
+    cout << endl
+         << endl;
+    imprimirArvore(arvore);
+    cout << "Remove frase: ";
+    getline(cin, remove);
+
+    remover(arvore, remove);
+    cout << endl
+         << endl;
+  } while (true);
 
   return 0;
 }
