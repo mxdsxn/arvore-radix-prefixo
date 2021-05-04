@@ -25,7 +25,7 @@ bool comparaNo(No *nohA, No *nohB);
 
 void sortFilhosNo(No *noh);
 
-void imprimirArvore(No *noh, long int nivel);
+void imprimirArvore(No *noh, long int nivel = 0);
 
 void imprimirBusca(No *noh, string prefixo);
 
