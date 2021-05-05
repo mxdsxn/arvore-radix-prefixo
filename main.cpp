@@ -1,70 +1,107 @@
+#include "clear.h"
 #include "radix.hpp"
+
+// Preenche a arvore com frases aleatorias para popular a estrutura
+void preencheEventosDefault(No *arvore)
+{
+  vector<string> defaultFrases({"montar mesa quadrada com vaso em cima",
+                                "montar mesa quadrada",
+                                "montar mesa",
+                                "montar mesa redonda",
+                                "",
+                                "montar",
+                                "montaria",
+                                "montar mesa quadrada com vaso embaixo",
+                                "fazer massa italiana rosa",
+                                "faz lua",
+                                "assistir shrek 2",
+                                "faz",
+                                "fazer bolo",
+                                "fazer pao",
+                                "faz sol",
+                                "fazer massa italiana",
+                                "fazer massa",
+                                " quadrada",
+                                "fazer massa italiana",
+                                "fazer massa",
+                                " redonda",
+                                " ",
+                                " quadrada rosa",
+                                "fazer bolo",
+                                "fazer pao",
+                                "faz sol",
+                                "montar mesa",
+                                "fazer massa italiana rosa",
+                                "montar mesa redonda",
+                                "",
+                                "faz lua",
+                                "montar",
+                                "assistir shrek 2",
+                                "montaria",
+                                "montaria",
+                                "montaria",
+                                "montaria",
+                                "montaria",
+                                "faz",
+                                "faz sol",
+                                "montar mesa quadrada com vaso em baixo",
+                                "montar mesa quadrada com vaso em nada",
+                                "montar mesa redonda roxa",
+                                "novidade"});
+
+  for (long int index = 0; index < defaultFrases.size(); index++)
+  {
+    inserir(arvore, defaultFrases[index]);
+  }
+}
 
 int main()
 {
   No *arvore = criaArvoreRadix();
+  preencheEventosDefault(arvore);
 
-  
-  inserir(arvore, "montar mesa quadrada com vaso em cima");
-  inserir(arvore, "montar mesa quadrada");
-  inserir(arvore, "montar mesa");
-  inserir(arvore, "montar mesa redonda");
-  inserir(arvore, "");
-  inserir(arvore, "montar");
-  inserir(arvore, "montaria");
-  inserir(arvore, "montar mesa quadrada com vaso embaixo");
-  inserir(arvore, "fazer massa italiana rosa");
-  inserir(arvore, "faz lua");
-  inserir(arvore, "assistir shrek 2");
-  inserir(arvore, "faz");
-  inserir(arvore, "fazer bolo");
-  inserir(arvore, "fazer pao");
-  inserir(arvore, "faz sol");
-  inserir(arvore, "fazer massa italiana");
-  inserir(arvore, "fazer massa");
-  inserir(arvore, " quadrada");
-  inserir(arvore, "fazer massa italiana");
-  inserir(arvore, "fazer massa");
-  inserir(arvore, " redonda");
-  inserir(arvore, " ");
-  inserir(arvore, " quadrada rosa");
-  inserir(arvore, "fazer bolo");
-  inserir(arvore, "fazer pao");
-  inserir(arvore, "faz sol");
-  inserir(arvore, "montar mesa");
-  inserir(arvore, "fazer massa italiana rosa");
-  inserir(arvore, "montar mesa redonda");
-  inserir(arvore, "");
-  inserir(arvore, "faz lua");
-  inserir(arvore, "montar");
-  inserir(arvore, "assistir shrek 2");
-  inserir(arvore, "montaria");
-  inserir(arvore, "montaria");
-  inserir(arvore, "montaria");
-  inserir(arvore, "montaria");
-  inserir(arvore, "montaria");
-  inserir(arvore, "faz");
-  inserir(arvore, "faz sol");
-  inserir(arvore, "montar mesa quadrada com vaso em baixo");
-  inserir(arvore, "montar mesa quadrada com vaso em nada");
-  inserir(arvore, "montar mesa redonda roxa");
+  int menuOption = 0;
+  string buffer;
 
-  imprimirArvore(arvore);
-
-  //busca(arvore);
-  string remove;
+  //getline(cin, buffer);
+  //return 0;
   do
   {
-    cout << endl
-         << endl;
-    imprimirArvore(arvore);
-    cout << "Remove frase: ";
-    getline(cin, remove);
+    clear();
 
-    remover(arvore, remove);
-    cout << endl
+    cout << "Escolha uma das opções:"
+         << endl
          << endl;
-  } while (true);
+
+    cout << "1 - Inserir" << endl
+         << "2 - Remover" << endl
+         << "3 - Buscar" << endl
+         << "4 - Imprimir Arvore" << endl
+         << "0 - Encerrar" << endl
+         << endl;
+
+    cin >> menuOption;
+    getline(cin, buffer);
+
+    switch (menuOption)
+    {
+    case 1:
+      insere(arvore);
+      break;
+    case 2:
+      remove(arvore);
+      break;
+    case 3:
+      busca(arvore);
+      break;
+    case 4:
+      imprime(arvore);
+      break;
+    default:
+      break;
+    }
+
+  } while (menuOption != 0);
 
   return 0;
 }

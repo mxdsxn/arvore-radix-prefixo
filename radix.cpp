@@ -1,3 +1,4 @@
+#include "clear.h"
 #include "radix.hpp"
 
 // Funcao para criar arvore radix
@@ -207,22 +208,125 @@ bool buscarFilhos(No *noh, string fraseBusca, string defaultPrefixo = "")
   return false;
 }
 
+// Funcao para interagir com o usuario e inserir uma frase
+void insere(No *arvore)
+{
+  string novaFrase;
+  string buffer;
+  int menuOption = 1;
+
+  do
+  {
+    clear();
+
+    cout << "Insira uma nova frase:" << endl;
+    getline(cin, novaFrase);
+    clear();
+
+    cout << "Frase inserida: '" << novaFrase << "'" << endl;
+    bool resultado = inserir(arvore, novaFrase);
+    cout << "Resultado: " << (resultado ? "Inserida com sucesso." : "Frase já existente ou vazia.")
+         << endl
+         << endl;
+
+    cout << "1 - Inserir novamente" << endl
+         << "0 - Voltar" << endl
+         << "> ";
+
+    cin >> menuOption;
+    getline(cin, buffer);
+    clear();
+
+  } while (menuOption == 1);
+}
+
 // Funcao para interagir com o usuario para buscar frase
 void busca(No *arvore)
 {
   string fraseBusca;
+  string buffer;
+  int menuOption = 1;
 
-  cout << "Busque uma frase:" << endl;
-  getline(cin, fraseBusca);
-
-  cout << "Busca: '" << fraseBusca << "'" << endl;
-
-  bool resultado = buscar(arvore, fraseBusca);
-  if (!resultado)
+  do
   {
-    cout << "Nao ha resultados para essa busca." << endl;
-  }
-  cout << endl;
+    clear();
+
+    cout << "Busque uma frase:" << endl;
+    getline(cin, fraseBusca);
+    clear();
+
+    cout << "Frase buscada: '" << fraseBusca << "'" << endl;
+    cout << "Resultado: "
+         << endl
+         << endl;
+
+    bool resultado = buscar(arvore, fraseBusca);
+    if (!resultado)
+    {
+      cout << " >> Nao ha resultados para essa busca. <<" << endl;
+    }
+    cout << endl
+         << endl;
+
+    cout << "1 - Buscar novamente" << endl
+         << "0 - Voltar" << endl
+         << "> ";
+
+    cin >> menuOption;
+    getline(cin, buffer);
+    clear();
+
+  } while (menuOption == 1);
+}
+
+// Funcao para interagir com o usuario para remover frase
+void remove(No *arvore)
+{
+  string fraseRemover;
+  string buffer;
+  int menuOption = 1;
+
+  do
+  {
+    clear();
+
+    cout << "Remova uma frase:" << endl;
+    getline(cin, fraseRemover);
+    clear();
+
+    cout << "Digite a frase que quer remover: '" << fraseRemover << "'" << endl;
+    bool resultado = remover(arvore, fraseRemover);
+    cout << "Resultado: " << (resultado ? "Removida com sucesso." : "Nao foi encontrada essa frase para remover ou vazia.") << endl;
+    cout << endl
+         << endl;
+
+    cout << "1 - Remover novamente" << endl
+         << "0 - Voltar" << endl
+         << "> ";
+
+    cin >> menuOption;
+    getline(cin, buffer);
+    clear();
+
+  } while (menuOption == 1);
+}
+
+// Funcao para interagir com o usuario para mostrar a estrutura atual da arvore
+void imprime(No *arvore)
+{
+  clear();
+
+  string buffer;
+  cout << ">> Arvore de prefixos(Radix) <<" << endl
+       << endl;
+
+  imprimirArvore(arvore);
+
+  cout << endl
+       << "--------- Tecle ENTER para voltar ---------" << endl;
+
+  getline(cin, buffer);
+  clear();
 }
 
 // Funcao de insercao de novo no (frase)

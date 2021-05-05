@@ -35,7 +35,13 @@ bool buscarRaiz(No *noh, string fraseBusca, string defaultPrefixo);
 
 bool buscarFilhos(No *noh, string fraseBusca, string defaultPrefixo);
 
+void insere(No *arvore);
+
 void busca(No *arvore);
+
+void remove(No *arvore);
+
+void imprime(No *arvore);
 
 bool inserir(No *noh, string novaFrase);
 
