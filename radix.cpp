@@ -208,6 +208,35 @@ bool buscarFilhos(No *noh, string fraseBusca, string defaultPrefixo = "")
   return false;
 }
 
+// Preenche a arvore com frases simulando eventos de agenda, para popular a estrutura
+// OBSERVACAO: nao foi possivel realizar essa funcao com um vetor de strings
+// pois ao preencher usando o for, aparecia o erro 'corrupted double-linked list'
+// mesmo tentando de varias formas, nao foi possivel resolver.
+// pela melhor otimizacao do tempo, optamos por deixar essa funcao assim.
+void preencheEventosDefault(No *arvore)
+{
+  inserir(arvore, "terminar lista de ed 2");
+  inserir(arvore, "terminar revisao de ed 2");
+  inserir(arvore, "terminar lista de tecnicas de programacao");
+  inserir(arvore, "terminar revisao de tecnicas de programacao");
+  inserir(arvore, "passear com o cachorro");
+  inserir(arvore, "passear com o porco");
+  inserir(arvore, "passear com o gato");
+  inserir(arvore, "passear com o namorado");
+  inserir(arvore, "passear");
+  inserir(arvore, "cozinhar macarrao");
+  inserir(arvore, "cozinhar macarrao ao molho branco");
+  inserir(arvore, "cozinhar macarrao a bolonhesa");
+  inserir(arvore, "descansar");
+  inserir(arvore, "descansar por 20 minutos");
+  inserir(arvore, "jogar league of legends");
+  inserir(arvore, "jogar wild rift");
+  inserir(arvore, "jogar animal crossing");
+  inserir(arvore, "jogar the sims");
+  inserir(arvore, "terminar de comer bolo na geladeira");
+  inserir(arvore, "terminar amizade com quem nao assistiu bbb");
+}
+
 // Funcao para interagir com o usuario e inserir uma frase
 void insere(No *arvore)
 {
