@@ -11,7 +11,7 @@ int main()
 
   do
   {
-    // clear();
+    clear();
 
     cout << "Escolha uma das opções:"
          << endl
